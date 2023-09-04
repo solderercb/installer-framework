@@ -403,10 +403,10 @@ void QInstaller::moveDirectoryContents(const QString &sourceDir, const QString &
 {
     Q_ASSERT(QFileInfo(sourceDir).isDir());
     Q_ASSERT(!QFileInfo::exists(targetDir) || QFileInfo(targetDir).isDir());
-    if (!QDir().mkpath(targetDir)) {
-        throw Error(QCoreApplication::translate("QInstaller", "Cannot create directory \"%1\".")
-            .arg(QDir::toNativeSeparators(targetDir)));
-    }
+//    if (!QDir().mkpath(targetDir)) {
+//        throw Error(QCoreApplication::translate("QInstaller", "Cannot create directory \"%1\".")
+//            .arg(QDir::toNativeSeparators(targetDir)));
+//    }
     QDirIterator it(sourceDir, QDir::NoDotAndDotDot | QDir::AllEntries);
     while (it.hasNext()) {
         const QFileInfo i(it.next());

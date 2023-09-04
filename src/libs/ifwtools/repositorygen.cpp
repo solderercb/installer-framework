@@ -236,8 +236,8 @@ void QInstallerTools::copyMetaData(const QString &_targetDir, const QString &met
 
     foreach (const PackageInfo &info, packages) {
         if (info.metaFile.isEmpty() && info.metaNode.isEmpty()) {
-            if (!QDir(targetDir).mkpath(info.name))
-                throw QInstaller::Error(QString::fromLatin1("Cannot create directory \"%1\".").arg(info.name));
+//            if (!QDir(targetDir).mkpath(info.name))
+//                throw QInstaller::Error(QString::fromLatin1("Cannot create directory \"%1\".").arg(info.name));
 
             const QString packageXmlPath = QString::fromLatin1("%1/meta/package.xml").arg(info.directory);
             qDebug() << "Copy meta data for package" << info.name << "using" << packageXmlPath;
@@ -377,7 +377,7 @@ void QInstallerTools::copyMetaData(const QString &_targetDir, const QString &met
                     if (!filePath.endsWith(QLatin1String(".sha1"), Qt::CaseInsensitive)) {
                         const QString fileName = QFileInfo(filePath).fileName();
                         // remove unnecessary version string from filename and add it to the list
-                        realContentFiles.append(fileName.mid(info.version.count()));
+                        realContentFiles.append(fileName);
                     }
                 }
 
@@ -707,10 +707,10 @@ PackageInfoVector QInstallerTools::createListOfRepositoryPackages(const QStringL
                         QStringList names = c2Element.text()
                             .split(QInstaller::commaRegExp(), Qt::SkipEmptyParts);
                         foreach (const QString &name, names) {
-                            info.copiedFiles.append(QString::fromLatin1("%1/%3%2").arg(info.directory,
-                                name, info.version));
-                            info.copiedFiles.append(QString::fromLatin1("%1/%3%2.sha1").arg(info.directory,
-                                name, info.version));
+                            info.copiedFiles.append(QString::fromLatin1("%1-%2-%3").arg(info.directory,
+                                info.version, name));
+                            info.copiedFiles.append(QString::fromLatin1("%1-%2-%3.sha1").arg(info.directory,
+                                info.version, name));
                         }
                     }
                 }
@@ -806,7 +806,7 @@ void QInstallerTools::createArchive(const QString &filename, const QStringList &
             "object for archive \"%1\": \"%2\".").arg(filename, QLatin1String(Q_FUNC_INFO)));
     }
     targetArchive->setCompressionLevel(compression);
-    if (!(targetArchive->open(QIODevice::WriteOnly) && targetArchive->create(data))) {
+    if(!(targetArchive->open(QIODevice::WriteOnly) && targetArchive->create(data))) {
         throw Error(QString::fromLatin1("Could not create archive \"%1\": %2").arg(
             QDir::toNativeSeparators(filename), targetArchive->errorString()));
     }
@@ -999,7 +999,7 @@ void QInstallerTools::copyComponentData(const QStringList &packageDirs, const QS
         qDebug() << "Copying component data for" << name;
 
         const QString namedRepoDir = QString::fromLatin1("%1/%2").arg(repoDir, name);
-        if (!QDir().mkpath(namedRepoDir)) {
+        if (!QDir().mkpath(repoDir)) {
             throw QInstaller::Error(QString::fromLatin1("Cannot create repository directory for component \"%1\".")
                 .arg(name));
         }
@@ -1017,7 +1017,7 @@ void QInstallerTools::copyComponentData(const QStringList &packageDirs, const QS
                             .create(absoluteEntryFilePath));
                         if (archive && archive->open(QIODevice::ReadOnly) && archive->isSupported()) {
                             QFile tmp(absoluteEntryFilePath);
-                            QString target = QString::fromLatin1("%1/%3%2").arg(namedRepoDir, entry, info.version);
+                            QString target = QString::fromLatin1("%1-%2-%3").arg(namedRepoDir, info.version, entry);
                             qDebug() << "Copying archive from" << tmp.fileName() << "to" << target;
                             if (!tmp.copy(target)) {
                                 throw QInstaller::Error(QString::fromLatin1("Cannot copy file \"%1\" to \"%2\": %3")
@@ -1029,7 +1029,7 @@ void QInstallerTools::copyComponentData(const QStringList &packageDirs, const QS
                         }
                     } else if (fileInfo.isDir()) {
                         qDebug() << "Compressing data directory" << entry;
-                        QString target = QString::fromLatin1("%1/%3%2.%4").arg(namedRepoDir, entry, info.version, archiveSuffix);
+                        QString target = QString::fromLatin1("%1-%2-%3.%4").arg(namedRepoDir, info.version, entry, archiveSuffix);
                         createArchive(target, QStringList() << dataDir.absoluteFilePath(entry), compression);
                         compressedFiles.append(target);
                     } else if (fileInfo.isSymLink()) {
@@ -1040,7 +1040,7 @@ void QInstallerTools::copyComponentData(const QStringList &packageDirs, const QS
 
             if (!filesToCompress.isEmpty()) {
                 qDebug() << "Compressing files found in data directory:" << filesToCompress;
-                QString target = QString::fromLatin1("%1/%2content.%3").arg(namedRepoDir, info.version, archiveSuffix);
+                QString target = QString::fromLatin1("%1-%2-root.%3").arg(namedRepoDir, info.version, archiveSuffix);
                 createArchive(target, filesToCompress, compression);
                 compressedFiles.append(target);
             }
@@ -1077,7 +1077,7 @@ void QInstallerTools::copyComponentData(const QStringList &packageDirs, const QS
             foreach (const QString &file, (*infos)[i].copiedFiles) {
                 QFileInfo fromInfo(file);
                 QFile from(file);
-                QString target = QString::fromLatin1("%1/%2").arg(namedRepoDir, fromInfo.fileName());
+                QString target = QString::fromLatin1("%1-%2").arg(namedRepoDir, fromInfo.fileName());
                 qDebug() << "Copying file from" << from.fileName() << "to" << target;
                 if (!from.copy(target)) {
                     throw QInstaller::Error(QString::fromLatin1("Cannot copy file \"%1\" to \"%2\": %3")

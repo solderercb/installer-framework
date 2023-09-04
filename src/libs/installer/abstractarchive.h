@@ -37,7 +37,7 @@
 #include <QPoint>
 
 #ifdef Q_OS_WIN
-typedef int mode_t;
+#define mode_t int
 #endif
 
 namespace QInstaller {

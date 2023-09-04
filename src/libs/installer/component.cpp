@@ -983,7 +983,7 @@ void Component::addDownloadableArchive(const QString &path)
 {
     Q_ASSERT(isFromOnlineRepository());
     qCDebug(QInstaller::lcDeveloperBuild) << "addDownloadable" << path;
-    d->m_downloadableArchives.append(d->m_vars.value(scVersion) + path);
+    d->m_downloadableArchives.append(path);
 }
 
 /*!

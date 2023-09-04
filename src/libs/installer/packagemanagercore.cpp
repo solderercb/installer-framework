@@ -827,7 +827,7 @@ int PackageManagerCore::downloadNeededArchives(double partProgressSize)
             DownloadItem item;
             item.checkSha1CheckSum = checkSha1CheckSum;
             item.fileName = scInstallerPrefixWithTwoArgs.arg(component->name(), versionFreeString);
-            item.sourceUrl = scThreeArgs.arg(component->repositoryUrl().toString(), component->name(), versionFreeString);
+            item.sourceUrl = QLatin1String("%1/%2").arg(component->repositoryUrl().toString(), versionFreeString);
             archivesToDownload.push_back(item);
         }
         archivesToDownloadTotalSize += component->value(scCompressedSize).toULongLong();
