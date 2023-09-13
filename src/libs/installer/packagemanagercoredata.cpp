@@ -97,6 +97,12 @@ PackageManagerCoreData::PackageManagerCoreData(const QHash<QString, QString> &va
         addNewVariable(scTargetConfigurationFile, m_settings.configurationFileName());
         addNewVariable(scStartMenuDir, m_settings.startMenuDir());
     } else {
+        // ignore default repos copied from installer executable to "maintanancetool.dat" as is
+        if(!m_settings.saveDefaultRepositories())
+        {
+            m_settings.setDefaultRepositories(QSet<Repository>());
+            m_settings.setTemporaryRepositories(QSet<Repository>(), false);
+        }
 #ifdef Q_OS_MACOS
         addNewVariable(scTargetDir, QFileInfo(QCoreApplication::applicationDirPath() + QLatin1String("/../../..")).absoluteFilePath());
 #else
@@ -110,7 +116,6 @@ PackageManagerCoreData::PackageManagerCoreData(const QHash<QString, QString> &va
 void PackageManagerCoreData::clear()
 {
     m_variables.clear();
-    m_settings = Settings();
 }
 
 /*!
