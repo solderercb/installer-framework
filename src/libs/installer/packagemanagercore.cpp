@@ -3721,6 +3721,14 @@ bool PackageManagerCore::isOfflineOnly() const
 }
 
 /*!
+    Returns \c true if this is an online-only installer.
+*/
+bool PackageManagerCore::isOnlineOnly() const
+{
+    return d->isOnlineOnly();
+}
+
+/*!
     \sa {installer::setUninstaller}{installer.setUninstaller}
     \sa isUninstaller(), setUpdater(), setPackageManager()
 */

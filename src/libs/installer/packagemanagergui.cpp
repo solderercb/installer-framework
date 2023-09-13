@@ -1605,9 +1605,9 @@ bool IntroductionPage::validatePage()
     setComplete(false);
     setErrorMessage(QString());
 
-    bool isOfflineOnlyInstaller = core->isInstaller() && core->isOfflineOnly();
-    // If not offline only installer, at least one valid repository needs to be available
-    if (!isOfflineOnlyInstaller && !validRepositoriesAvailable()) {
+    bool isOnlineOnlyInstaller = core->isInstaller() && core->isOnlineOnly();
+    // If online only installer, at least one valid repository needs to be available
+    if (isOnlineOnlyInstaller && !validRepositoriesAvailable()) {
         setErrorMessage(QLatin1String("<font color=\"red\">") + tr("At least one valid and enabled "
             "repository required for this action to succeed.") + QLatin1String("</font>"));
         return isComplete();

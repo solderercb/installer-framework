@@ -277,6 +277,7 @@ public:
     Q_INVOKABLE void setInstaller();
     Q_INVOKABLE bool isInstaller() const;
     Q_INVOKABLE bool isOfflineOnly() const;
+    Q_INVOKABLE bool isOnlineOnly() const;
 
     Q_INVOKABLE void setUninstaller();
     Q_INVOKABLE bool isUninstaller() const;
